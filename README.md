@@ -62,6 +62,10 @@ defaults write aik099.video-inspector DebugLogging -bool YES
 tail -f ~/Library/Logs/Video\ Inspector.log
 ```
 
+## Contributing
+
+Bug reports and pull requests are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md). Changes are listed in [CHANGELOG.md](CHANGELOG.md).
+
 ## License
 
 BSD 3-Clause, see [LICENSE](LICENSE).

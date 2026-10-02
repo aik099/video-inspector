@@ -21,6 +21,17 @@ jobs:
       - name: Package app
         run: ditto -c -k --keepParent "build/Video Inspector.app" "build/Video-Inspector-${GITHUB_REF_NAME}.zip"
 
+      - name: Release notes from CHANGELOG.md
+        # Only when the release was published without a description; tag "v1.2.0" -> section "## [1.2.0]"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          body=$(gh release view "$GITHUB_REF_NAME" --json body --jq .body)
+          awk -v v="${GITHUB_REF_NAME#v}" '$0 ~ "^## \\[" v "\\]" {on=1; next} /^## \[/ {on=0} on' CHANGELOG.md > notes.md
+          if [ -z "$body" ] && [ -s notes.md ]; then
+            gh release edit "$GITHUB_REF_NAME" --notes-file notes.md
+          fi
+
       - name: Attach to release
         env:
           GH_TOKEN: ${{ github.token }}

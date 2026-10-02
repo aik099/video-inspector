@@ -1,0 +1,36 @@
+name: Bug report
+description: Something shows wrong, is missing, or the app misbehaves
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what you saw instead. Screenshots help.
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: "26.6"
+    validations:
+      required: true
+  - type: input
+    id: app
+    attributes:
+      label: App version
+      description: Finder → Get Info on the app, or the release you downloaded
+      placeholder: "1.0.0"
+  - type: input
+    id: ffprobe
+    attributes:
+      label: ffprobe version
+      description: Output of `ffprobe -version | head -1`
+      placeholder: "ffprobe version 7.0 ..."
+  - type: textarea
+    id: probe
+    attributes:
+      label: ffprobe output for the file (if it's about a specific file)
+      description: "Run `ffprobe -v quiet -print_format json -show_format -show_streams <file>` and paste the result. It contains the file name and tags; remove anything private."
+      render: json

@@ -8,7 +8,7 @@
 
 ## Re-recording
 
-1. Regenerate the demo video if needed: `demo/make.sh`
+1. Regenerate the demo video if needed: `docs/demo/make-video.sh`
 2. Build and start the app on its start screen: `./build.sh && open "build/Video Inspector.app"`
 3. Record the window as video (MP4), e.g. with CleanShot: drop the demo file, then click General → Video (scroll) → Audio → Subtitles → Cover Art → General; optionally open more files as tabs.
 4. Make the GIF (recording into `demo/backdrop.png`, then palette GIF; about 3 s):
