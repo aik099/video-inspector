@@ -1,6 +1,13 @@
 import SwiftUI
 
 struct ContentView: View {
+	// Small minimum like native apps: start screen and report both scroll when short,
+	// so the tab bar can take its height from the content without the window growing
+	static let minHeight: CGFloat = 360
+	static let minWidth: CGFloat = 420
+	// Default window content: whole start screen visible
+	static let idealSize = NSSize(width: 540, height: 656)
+
 	@ObservedObject var inspector: Inspector
 
 	var body: some View {
@@ -18,10 +25,12 @@ struct ContentView: View {
 				}
 			}
 		}
-		// Tabs never get clipped: window stays at least tab bar + card margins wide
-		.frame(minWidth: max(420, inspector.tabBarWidth + 40))
-		// Empty state (280) + TV guide card + margins, with the tab bar shown
-		.frame(minHeight: 620)
+		// Minimum size is enforced by the window (Windows.windowWillResize). The ideal size matters:
+		// the hosting view resizes the window to it on first layout
+		.frame(
+			idealWidth: ContentView.idealSize.width, maxWidth: .infinity,
+			idealHeight: ContentView.idealSize.height, maxHeight: .infinity
+		)
 		.overlay {
 			if inspector.isDropTargeted {
 				RoundedRectangle(cornerRadius: 8).stroke(Color.accentColor, lineWidth: 3)
@@ -54,6 +63,17 @@ struct StartView: View {
 	private let canProbe = Shell.find("ffprobe") != nil
 
 	var body: some View {
+		// One scroll area for the whole screen: fills a tall window, scrolls in a short one
+		// (squeezed, ContentUnavailableView would scroll on its own and cut the icon off)
+		GeometryReader { geometry in
+			ScrollView {
+				content
+					.frame(minHeight: geometry.size.height)
+			}
+		}
+	}
+
+	private var content: some View {
 		VStack(spacing: 0) {
 			Group {
 				if canProbe {
@@ -82,7 +102,7 @@ struct StartView: View {
 					}
 				}
 			}
-			// Room for icon, title, two hint lines and button; below this it starts scrolling
+			// Room for icon, title, two hint lines and button
 			.frame(minHeight: 280)
 			TVGuideView()
 				.padding(.horizontal, 20)

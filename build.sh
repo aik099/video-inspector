@@ -77,4 +77,12 @@ plutil -lint -s "$APP/Contents/Info.plist" || fail "Info.plist is invalid"
 codesign --force -s - "$APP" || fail "codesign failed"
 codesign --verify "$APP" || fail "signature verification failed"
 
+# A fresh build starts from default window size/position: forget remembered frames and window state
+# (settings like DebugLogging stay)
+BUNDLE_ID=aik099.video-inspector
+defaults read "$BUNDLE_ID" 2>/dev/null | grep -o '"NSWindow Frame [^"]*"' | tr -d '"' | while read -r KEY; do
+	defaults delete "$BUNDLE_ID" "$KEY"
+done
+rm -rf "$HOME/Library/Saved Application State/$BUNDLE_ID.savedState"
+
 echo "Built $APP ($(lipo -archs "$APP/Contents/MacOS/VideoInspector"))"

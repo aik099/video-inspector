@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 // Windows are created here, AppKit-style (NSWindow hosting SwiftUI content), not by a SwiftUI
@@ -5,14 +6,20 @@ import SwiftUI
 final class Windows: NSObject, NSWindowDelegate {
 	static let shared = Windows()
 	private static let appTitle = "Video Inspector"
-	private static let contentSize = NSSize(width: 540, height: 640)
+	private static let contentSize = ContentView.idealSize
 	// Remembers the position/size of the first window across launches
 	private static let frameName = "VideoInspectorWindow"
 
 	private struct Entry {
 		let window: NSWindow
 		let inspector: Inspector
+		var minWidthUpdates: AnyCancellable?
 	}
+
+	// Minimum content size per window, enforced in windowWillResize: AppKit resets contentMinSize
+	// for SwiftUI-hosted content. Width follows the report's tab picker
+	private var minContentWidth: [ObjectIdentifier: CGFloat] = [:]
+	private static let minContentHeight = ContentView.minHeight
 
 	private var entries: [Entry] = []
 
@@ -37,22 +44,45 @@ final class Windows: NSObject, NSWindowDelegate {
 	@discardableResult
 	private func makeWindow(_ placement: Placement) -> Inspector {
 		let inspector = Inspector()
-		let controller = NSHostingController(rootView: ContentView(inspector: inspector))
-		// Window keeps its own size; SwiftUI content only sets the minimum (tab bar width, start screen)
-		controller.sizingOptions = [.minSize]
+		let content = NSHostingView(rootView: ContentView(inspector: inspector))
+		// No automatic sizing: a hosting controller (or these options) would overwrite the window's
+		// minimum set below with SwiftUI's content-only minimum
+		content.sizingOptions = []
 
-		let window = NSWindow(contentViewController: controller)
-		window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
+		let window = NSWindow(
+			contentRect: NSRect(origin: .zero, size: Self.contentSize),
+			styleMask: [.titled, .closable, .miniaturizable, .resizable],
+			backing: .buffered, defer: false
+		)
+		window.contentView = content
 		window.isReleasedWhenClosed = false
 		window.tabbingIdentifier = "inspector"
 		window.delegate = self
 		window.setContentSize(Self.contentSize)
-		entries.append(Entry(window: window, inspector: inspector))
+		let minWidthUpdates = inspector.$tabBarWidth.sink { [weak self, weak window] width in
+			guard let self, let window else { return }
+			let minWidth = max(ContentView.minWidth, width + 40)
+			self.minContentWidth[ObjectIdentifier(window)] = minWidth
+			// Grow now if a new file's tabs don't fit
+			let content = window.contentLayoutRect.size
+			if content.width < minWidth {
+				window.setContentSize(NSSize(width: minWidth, height: content.height))
+			}
+		}
+		entries.append(Entry(window: window, inspector: inspector, minWidthUpdates: minWidthUpdates))
 
 		switch placement {
 		case .restored:
 			window.center()
 			window.setFrameAutosaveName(Self.frameName)
+			// A frame saved before the current minimum existed is restored as is: grow it, keeping the top edge
+			var frame = window.frame
+			let minHeight = window.frameRect(forContentRect: NSRect(x: 0, y: 0, width: 0, height: Self.minContentHeight)).height
+			if frame.height < minHeight {
+				frame.origin.y -= minHeight - frame.height
+				frame.size.height = minHeight
+				window.setFrame(frame, display: false)
+			}
 		case .tab(let host):
 			// Attached before it's shown: appears directly as a tab
 			host.addTabbedWindow(window, ordered: .above)
@@ -64,7 +94,8 @@ final class Windows: NSObject, NSWindowDelegate {
 		}
 		window.makeKeyAndOrderFront(nil)
 		updateTitles()
-		Log.debug("window \(window.windowNumber) \(placement): \(window.tabbedWindows?.count ?? 1) tab(s)")
+		Log.debug("window \(window.windowNumber) \(placement): \(window.tabbedWindows?.count ?? 1) tab(s), frame \(window.frame.size)")
+
 		return inspector
 	}
 
@@ -157,9 +188,19 @@ final class Windows: NSObject, NSWindowDelegate {
 		}
 	}
 
+	func windowWillResize(_ window: NSWindow, to frameSize: NSSize) -> NSSize {
+		let content = window.contentRect(forFrameRect: NSRect(origin: .zero, size: frameSize)).size
+		let minWidth = minContentWidth[ObjectIdentifier(window)] ?? ContentView.minWidth
+		var size = frameSize
+		if content.width < minWidth { size.width += minWidth - content.width }
+		if content.height < Self.minContentHeight { size.height += Self.minContentHeight - content.height }
+		return size
+	}
+
 	func windowWillClose(_ notification: Notification) {
 		guard let window = notification.object as? NSWindow else { return }
 		entries.removeAll { $0.window === window }
+		minContentWidth[ObjectIdentifier(window)] = nil
 		// After AppKit has removed the closed tab from its group
 		DispatchQueue.main.async { self.updateTitles() }
 	}
