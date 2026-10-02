@@ -195,7 +195,7 @@ final class Windows {
 			return
 		}
 		let panel = NSOpenPanel()
-		panel.allowedContentTypes = [.movie]
+		panel.allowedContentTypes = VideoTypes.contentTypes
 		if panel.runModal() == .OK, let url = panel.url {
 			open([url])
 		}

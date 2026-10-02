@@ -66,7 +66,7 @@ final class Inspector: ObservableObject {
 			return
 		}
 		let panel = NSOpenPanel()
-		panel.allowedContentTypes = [.movie]
+		panel.allowedContentTypes = VideoTypes.contentTypes
 		if panel.runModal() == .OK, let url = panel.url {
 			load(url)
 		}

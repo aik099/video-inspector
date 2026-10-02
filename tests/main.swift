@@ -50,8 +50,16 @@ func imageSize(_ image: NSImage?) -> String {
 
 // Snapshots: one expected file per fixture
 let names = (try? FileManager.default.contentsOfDirectory(atPath: fixtures.path)) ?? []
-let videos = names.filter { URL(fileURLWithPath: $0).isVideoFile }.sorted()
+// Every media file in fixtures/ is compared; none may be skipped
+let videos = names.filter { !$0.hasPrefix(".") && !$0.hasSuffix(".sh") }.sorted()
 check(!videos.isEmpty, "no fixtures in \(fixtures.path)")
+for name in videos {
+	check(URL(fileURLWithPath: name).isVideoFile, "fixture \(name) not recognized as video")
+}
+let snapshots = (try? FileManager.default.contentsOfDirectory(atPath: expectedDir.path)) ?? []
+for snapshot in snapshots where snapshot.hasSuffix(".txt") && !videos.contains(String(snapshot.dropLast(4))) {
+	check(false, "snapshot \(snapshot) has no fixture")
+}
 for name in videos {
 	let actual = snapshot(fixtures.appendingPathComponent(name))
 	let expectedURL = expectedDir.appendingPathComponent(name + ".txt")
@@ -60,7 +68,10 @@ for name in videos {
 		print("updated \(expectedURL.lastPathComponent)")
 		continue
 	}
-	let expected = (try? String(contentsOf: expectedURL, encoding: .utf8)) ?? ""
+	guard let expected = try? String(contentsOf: expectedURL, encoding: .utf8) else {
+		check(false, "missing snapshot \(expectedURL.lastPathComponent) (run ./test.sh --update)")
+		continue
+	}
 	if actual == expected {
 		print("ok    \(name)")
 	} else {
@@ -82,7 +93,7 @@ check(Format.ratio("1:1", separator: ":") == "1", "ratio 1:1")
 check(Format.ratio("0:1", separator: ":") == nil, "ratio 0:1 is missing")
 check(Format.duration(6684) == "01:51:24", "duration")
 check(Format.bitrate(448_000) == "448 Kbps" && Format.bitrate(3_000_000) == "3 Mbps", "bitrate")
-for ext in ["mkv", "avi", "mp4", "mov", "ts", "webm", "m2ts", "vob"] {
+for ext in ["mkv", "MKV", "avi", "mp4", "mov", "ts", "webm", "m2ts", "vob", "rmvb"] {
 	check(URL(fileURLWithPath: "a.\(ext)").isVideoFile, "\(ext) is video")
 }
 for ext in ["jpg", "png", "mp3", "txt", "srt"] {

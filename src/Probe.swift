@@ -35,10 +35,24 @@ struct Row: Identifiable {
 
 typealias JSON = [String: Any]
 
+// Video file types. The system registry alone isn't enough: a clean macOS doesn't know
+// mkv, vob, etc. (players like VLC register them), so known extensions count too
+enum VideoTypes {
+	static let extensions: Set<String> = [
+		"3g2", "3gp", "asf", "avi", "divx", "dv", "f4v", "flv", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov",
+		"mp4", "mpeg", "mpg", "mts", "mxf", "ogm", "ogv", "rm", "rmvb", "ts", "vob", "webm", "wmv",
+	]
+
+	// For open panels: movies the system knows, plus the extension list (dynamic types where unknown)
+	static var contentTypes: [UTType] {
+		[.movie] + extensions.sorted().compactMap { UTType(filenameExtension: $0) }
+	}
+}
+
 extension URL {
-	// By extension, via the system type registry (mkv, avi, mp4, ts, webm, … all conform to public.movie)
 	var isVideoFile: Bool {
-		UTType(filenameExtension: pathExtension)?.conforms(to: .movie) ?? false
+		let ext = pathExtension.lowercased()
+		return VideoTypes.extensions.contains(ext) || (UTType(filenameExtension: ext)?.conforms(to: .movie) ?? false)
 	}
 }
 

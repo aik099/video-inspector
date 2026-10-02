@@ -43,6 +43,10 @@ done
 lipo -create "${SLICES[@]}" -output "$APP/Contents/MacOS/VideoInspector" || fail "lipo failed"
 rm -f "${SLICES[@]}"
 
+# "Open With" for extensions a clean macOS doesn't type as movies; keep in sync with VideoTypes.extensions
+EXTENSIONS=$(grep -A4 'static let extensions' src/Probe.swift | grep -o '"[a-z0-9]*"' | tr -d '"' | sed 's#.*#<string>&</string>#' | tr -d '\n')
+[ -n "$EXTENSIONS" ] || fail "could not read video extensions from src/Probe.swift"
+
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -55,10 +59,17 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <key>CFBundleShortVersionString</key><string>$VERSION</string>
 <key>LSMinimumSystemVersion</key><string>14.0</string>
 <key>NSHighResolutionCapable</key><true/>
-<key>CFBundleDocumentTypes</key><array><dict>
+<key>CFBundleDocumentTypes</key><array>
+<dict>
 <key>CFBundleTypeRole</key><string>Viewer</string>
 <key>LSItemContentTypes</key><array><string>public.movie</string></array>
-</dict></array>
+</dict>
+<dict>
+<key>CFBundleTypeName</key><string>Video File</string>
+<key>CFBundleTypeRole</key><string>Viewer</string>
+<key>CFBundleTypeExtensions</key><array>$EXTENSIONS</array>
+</dict>
+</array>
 </dict></plist>
 PLIST
 plutil -lint -s "$APP/Contents/Info.plist" || fail "Info.plist is invalid"
