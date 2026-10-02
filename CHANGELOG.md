@@ -4,6 +4,8 @@ Format: [Keep a Changelog](https://keepachangelog.com). Versions follow [Semanti
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-02
+
 ### Added
 
 - Video file inspector: drop a file on the window or Dock icon, or press `Command`+`O`
