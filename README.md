@@ -5,6 +5,8 @@ Small macOS app that shows what's inside a video file: container, video, audio, 
 
 Drop a video on the window or the Dock icon, or press `Command`+`O`.
 
+![Video Inspector demo](docs/demo.gif)
+
 ## Features
 
 - Tabs per stream kind (General, Video, Audio, Subtitles, Cover Art), shown only when the file has them
@@ -12,6 +14,9 @@ Drop a video on the window or the Dock icon, or press `Command`+`O`.
 - "On 16:9 TV" row: whether the picture fills a 16:9 screen or gets black bars, and how wide
 - Several files at once: each opens in its own window tab (`Command`+`T` for an empty one)
 - Native universal app (Apple Silicon and Intel), under 2 MB
+- Start screen with a guide to how a video's aspect ratio fits a 16:9 TV
+
+<img src="docs/start-screen.png" alt="Start screen with the 16:9 TV guide" width="400">
 
 ## Download
 
@@ -25,6 +30,10 @@ Each GitHub release has the universal app attached (`Video-Inspector-<version>.z
 - `ffprobe` and `ffmpeg` are searched in `/opt/homebrew/bin`, `/usr/local/bin`, `/opt/local/bin`, `/usr/bin`
 - Static builds can be obtained at [osxexperts.net](https://www.osxexperts.net) (Apple Silicon & Intel), [evermeet.cx/ffmpeg](https://evermeet.cx/ffmpeg/) (Intel)
 - Homebrew (`brew install ffmpeg`) and MacPorts also work
+
+Without `ffprobe` the app shows where to put it instead of the start screen:
+
+<img src="docs/no-ffprobe.png" alt="ffprobe Not Found screen" width="400">
 
 ## Build
 
