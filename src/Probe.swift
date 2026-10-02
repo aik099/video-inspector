@@ -43,6 +43,17 @@ enum VideoTypes {
 		"mp4", "mpeg", "mpg", "mts", "mxf", "ogm", "ogv", "rm", "rmvb", "ts", "vob", "webm", "wmv",
 	]
 
+	// Fallback for extensions a clean macOS has no type (so no MIME type) for
+	private static let mimeTypes = [
+		"mkv": "video/matroska", "webm": "video/webm", "vob": "video/mpeg", "ogv": "video/ogg", "ogm": "video/ogg",
+		"rm": "application/vnd.rn-realmedia", "rmvb": "application/vnd.rn-realmedia-vbr", "divx": "video/divx",
+		"mxf": "application/mxf", "f4v": "video/mp4", "flv": "video/x-flv",
+	]
+
+	static func mimeType(_ ext: String) -> String? {
+		UTType(filenameExtension: ext)?.preferredMIMEType ?? mimeTypes[ext.lowercased()]
+	}
+
 	// For open panels: movies the system knows, plus the extension list (dynamic types where unknown)
 	static var contentTypes: [UTType] {
 		[.movie] + extensions.sorted().compactMap { UTType(filenameExtension: $0) }
@@ -148,7 +159,7 @@ private struct Report {
 	mutating func addFormat(_ format: JSON, streams: [JSON], url: URL) {
 		let types = streams.compactMap { $0["codec_type"] as? String }
 		add("Media Type", types.contains("video") ? "Video" : types.contains("audio") ? "Audio" : nil)
-		add("Mime Type", UTType(filenameExtension: url.pathExtension)?.preferredMIMEType)
+		add("Mime Type", VideoTypes.mimeType(url.pathExtension))
 		add("Format", "\(format["format_long_name"] ?? "") [\(format["format_name"] ?? "")]")
 		add("Duration", number(format, "duration").map(Format.duration))
 		add("Bitrate", number(format, "bit_rate").map(Format.bitrate))
