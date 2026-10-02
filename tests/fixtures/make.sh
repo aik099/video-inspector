@@ -1,6 +1,6 @@
 #!/bin/bash
 # Regenerates the committed test fixtures. Run only when adding/changing fixtures,
-# then refresh snapshots with ./test.sh --update and review the diff.
+# then refresh snapshots with tests/test.sh --update and review the diff.
 set -euo pipefail
 cd "$(dirname "$0")"
 

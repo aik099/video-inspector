@@ -1,9 +1,10 @@
 #!/bin/bash
 # Builds and runs the tests (non-UI code against committed fixtures); exits non-zero on failure
-# Usage: ./test.sh            compare with tests/expected
-#        ./test.sh --update   rewrite tests/expected (review the diff before committing)
+# Usage: tests/test.sh            compare with tests/expected
+#        tests/test.sh --update   rewrite tests/expected (review the diff before committing)
 set -euo pipefail
-cd "$(dirname "$0")"
+# Run from the repo root: paths below are relative to it
+cd "$(dirname "$0")/.."
 
 fail() {
 	echo "error: $*" >&2

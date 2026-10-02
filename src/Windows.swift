@@ -75,14 +75,6 @@ final class Windows: NSObject, NSWindowDelegate {
 		case .restored:
 			window.center()
 			window.setFrameAutosaveName(Self.frameName)
-			// A frame saved before the current minimum existed is restored as is: grow it, keeping the top edge
-			var frame = window.frame
-			let minHeight = window.frameRect(forContentRect: NSRect(x: 0, y: 0, width: 0, height: Self.minContentHeight)).height
-			if frame.height < minHeight {
-				frame.origin.y -= minHeight - frame.height
-				frame.size.height = minHeight
-				window.setFrame(frame, display: false)
-			}
 		case .tab(let host):
 			// Attached before it's shown: appears directly as a tab
 			host.addTabbedWindow(window, ordered: .above)

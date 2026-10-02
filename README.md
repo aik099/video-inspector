@@ -41,10 +41,10 @@ The script exits non-zero if anything fails. `VERSION=1.2.0 ./build.sh` sets the
 ## Tests
 
 ```
-./test.sh
+tests/test.sh
 ```
 
-Checks what the app would show for small committed test videos in `tests/fixtures/` (tabs, rows, values, thumbnail choice) against `tests/expected/`. Needs `ffprobe` and `ffmpeg`. After an intended change in the output, run `./test.sh --update` and review the diff.
+Checks what the app would show for small committed test videos in `tests/fixtures/` (tabs, rows, values, thumbnail choice) against `tests/expected/`. Needs `ffprobe` and `ffmpeg`. After an intended change in the output, run `tests/test.sh --update` and review the diff.
 
 ## Debug log
 

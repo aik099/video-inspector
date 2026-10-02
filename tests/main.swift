@@ -1,7 +1,7 @@
 import AppKit
 
 // Snapshot + unit tests for the non-UI code (Probe, Format, ReportLayout).
-// Usage: ./test.sh [--update]
+// Usage: tests/test.sh [--update]
 let update = CommandLine.arguments.contains("--update")
 let root = URL(fileURLWithPath: CommandLine.arguments[1])
 let fixtures = root.appendingPathComponent("tests/fixtures")
@@ -69,7 +69,7 @@ for name in videos {
 		continue
 	}
 	guard let expected = try? String(contentsOf: expectedURL, encoding: .utf8) else {
-		check(false, "missing snapshot \(expectedURL.lastPathComponent) (run ./test.sh --update)")
+		check(false, "missing snapshot \(expectedURL.lastPathComponent) (run tests/test.sh --update)")
 		continue
 	}
 	if actual == expected {
