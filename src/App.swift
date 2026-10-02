@@ -6,21 +6,19 @@ struct VideoInspectorApp: App {
 	@NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
 	var body: some Scene {
-		WindowGroup("Video Inspector", id: Windows.sceneID) {
-			WindowHost()
-		}
-		// File opens are routed by AppDelegate, not by SwiftUI spawning windows
-		.handlesExternalEvents(matching: [])
-		.defaultSize(width: 540, height: 640)
-		.windowResizability(.contentSize)
-		.commands {
-			CommandGroup(after: .newItem) {
-				Button("New Tab") { Windows.shared.newTab() }
-					.keyboardShortcut("t")
-				Button("Open…") { Windows.shared.showOpenPanel() }
-					.keyboardShortcut("o")
+		// Windows are made by `Windows` (AppKit); this scene only carries the menu commands
+		Settings { EmptyView() }
+			.commands {
+				CommandGroup(replacing: .appSettings) {}
+				CommandGroup(replacing: .newItem) {
+					Button("New Window") { Windows.shared.newWindow() }
+						.keyboardShortcut("n")
+					Button("New Tab") { Windows.shared.newTab() }
+						.keyboardShortcut("t")
+					Button("Open…") { Windows.shared.showOpenPanel() }
+						.keyboardShortcut("o")
+				}
 			}
-		}
 	}
 }
 
@@ -29,6 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 		NSWindow.allowsAutomaticWindowTabbing = true
 	}
 
+	// Launched with files: `application(_:open:)` has already made the window
 	func applicationDidFinishLaunching(_ notification: Notification) {
 		Windows.shared.ensureWindow()
 	}
@@ -38,9 +37,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 		Windows.shared.open(urls)
 	}
 
-	// File > New Tab (⌘T) and the tab bar's "+" button
+	// Tab bar "+"
 	@objc func newWindowForTab(_ sender: Any?) {
 		Windows.shared.newTab()
+	}
+
+	// Dock icon clicked with no window open
+	func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows: Bool) -> Bool {
+		if !hasVisibleWindows { Windows.shared.ensureWindow() }
+		return true
 	}
 
 	func applicationShouldTerminateAfterLastWindowClosed(_ application: NSApplication) -> Bool {
