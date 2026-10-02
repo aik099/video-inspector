@@ -1,0 +1,21 @@
+== Tabs: General, Audio
+[file] audio-only.mkv
+
+== General
+Media Type: Audio
+Mime Type: video/matroska
+Format: Matroska / WebM [matroska,webm]
+Duration: 00:00:01
+Bitrate: 39 Kbps
+File Size: 5 KB
+
+== Audio
+[Audio [0:0]]
+Codec: AAC (Advanced Audio Coding) [aac]
+Profile: LC
+Sample Format: fltp
+Sample Rate: 44100
+Channels: 1
+Channel Layout: mono
+
+== Thumbnail: none

@@ -1,0 +1,23 @@
+== Tabs: General, Video
+[file] anamorphic.mkv
+
+== General
+Media Type: Video
+Mime Type: video/matroska
+Format: Matroska / WebM [matroska,webm]
+Duration: 00:00:01
+Bitrate: 194 Kbps
+File Size: 24 KB
+
+== Video
+[Video [0:0]]
+Codec: H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 [h264]
+Profile: High
+Width / Height: 720 x 576
+Sample Aspect Ratio: 1.067
+Display Aspect Ratio: 1.333
+On 16:9 TV: Bars left and right, 240 px each
+Picture Format: yuv420p
+Framerate: 25
+
+== Thumbnail: v:0, seek 0 s, 320x320

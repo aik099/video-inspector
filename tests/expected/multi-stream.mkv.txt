@@ -1,0 +1,77 @@
+== Tabs: General, Video, Audio (2), Subtitles (2), Cover Art (2)
+[file] multi-stream.mkv
+
+== General
+Media Type: Video
+Mime Type: video/matroska
+Format: Matroska / WebM [matroska,webm]
+Duration: 00:00:01
+Bitrate: 141 Kbps
+File Size: 18 KB
+Title: Multi Stream Test
+
+== Video
+[Video [0:0]]
+Codec: H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 [h264]
+Profile: High
+Width / Height: 320 x 134
+Sample Aspect Ratio: 1
+Display Aspect Ratio: 2.388
+On 16:9 TV: Bars top and bottom, 138 px each
+Picture Format: yuv420p
+Framerate: 25
+
+== Audio (2)
+[Audio [1:0]]
+Codec: AAC (Advanced Audio Coding) [aac]
+Profile: LC
+Sample Format: fltp
+Sample Rate: 44100
+Channels: 1
+Channel Layout: mono
+Title: Dubbing
+Default: true
+Language: rus
+[Audio [2:1]]
+Codec: AAC (Advanced Audio Coding) [aac]
+Profile: LC
+Sample Format: fltp
+Sample Rate: 44100
+Channels: 1
+Channel Layout: mono
+Title: Original
+Language: eng
+
+== Subtitles (2)
+[Text [3:0]]
+Codec: SubRip subtitle [subrip]
+Title: Forced
+Forced: true
+Language: rus
+[Text [4:1]]
+Codec: SubRip subtitle [subrip]
+Language: eng
+
+== Cover Art (2)
+[Cover Art [5:1]]
+Codec: Motion JPEG [mjpeg]
+File Name: cover.jpg
+Profile: Baseline
+Duration: 00:00:01
+Width / Height: 100 x 150
+Sample Aspect Ratio: 1
+Display Aspect Ratio: 0.667
+Picture Format: yuvj420p
+(preview: 100x150)
+[Cover Art [6:2]]
+Codec: Motion JPEG [mjpeg]
+File Name: small_cover.jpg
+Profile: Baseline
+Duration: 00:00:01
+Width / Height: 120 x 52
+Sample Aspect Ratio: 1
+Display Aspect Ratio: 2.308
+Picture Format: yuvj420p
+(preview: 120x52)
+
+== Thumbnail: v:1, still image, 214x320

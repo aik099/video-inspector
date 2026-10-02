@@ -1,0 +1,27 @@
+name: Release
+
+# Attaches the universal app to a published GitHub release
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build app
+        # Tag "v1.2.0" -> app version "1.2.0"
+        run: VERSION="${GITHUB_REF_NAME#v}" ./build.sh --universal
+
+      - name: Package app
+        run: ditto -c -k --keepParent "build/Video Inspector.app" "build/Video-Inspector-${GITHUB_REF_NAME}.zip"
+
+      - name: Attach to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" "build/Video-Inspector-${GITHUB_REF_NAME}.zip" --clobber
